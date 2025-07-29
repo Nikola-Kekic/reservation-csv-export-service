@@ -18,6 +18,9 @@ import java.util.UUID;
 
 import static com.example.invt.constant.ReservationExportRootPath.*;
 
+/**
+ * REST controller for exporting flexibility reservation data as CSV files.
+ */
 @RestController
 @RequestMapping( path = API_FLEXIBILITY + RESERVATION_EXPORT)
 public class ReservationExportController {
@@ -25,6 +28,13 @@ public class ReservationExportController {
     @Autowired
     private ReservationExportService reservationExportService;
 
+    /**
+     * Returns a CSV file containing all reservations for a given asset and market.
+     *
+     * @param assetId  the asset ID (UUID as string)
+     * @param marketId the market ID (UUID as string)
+     * @return CSV file as a {@link ResponseEntity} with {@link InputStreamResource}
+     */
     @GetMapping(ASSETID + MARKET + MARKETID)
     public ResponseEntity<InputStreamResource> getReservationCsv(@PathVariable String assetId, @PathVariable String marketId) {
         var assetUuid = parseUuid(assetId, "assetId");
@@ -35,6 +45,16 @@ public class ReservationExportController {
         return createCsvResponse(csvStream, "reservation.csv");
     }
 
+    /**
+     * Returns a CSV file containing filtered reservations based on time range and optional aggregation.
+     *
+     * @param assetId  the asset ID (UUID as string)
+     * @param marketId the market ID (UUID as string)
+     * @param from     start of time range (ISO date-time)
+     * @param to       end of time range (ISO date-time)
+     * @param total    if true, returns aggregated data
+     * @return CSV file as a {@link ResponseEntity} with {@link InputStreamResource}
+     */
     @GetMapping(ASSETID + MARKET + MARKETID + EXPORT)
     public ResponseEntity<InputStreamResource> getReservationsCsv(@PathVariable String assetId, @PathVariable String marketId,
                                                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,

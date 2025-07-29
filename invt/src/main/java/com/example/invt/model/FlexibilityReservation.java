@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Represents a flexibility reservation, including bid IDs, values, prices, and timestamps.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

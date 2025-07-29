@@ -13,10 +13,20 @@ import java.util.List;
 
 import static com.example.invt.constant.CsvHeaders.RESERVATION_EXPORT_HEADERS;
 
+/**
+ * Utility class for exporting {@link FlexibilityReservation} data to a CSV format.
+ */
 @Component
 public class ReservationCsvUtil {
 
-    public static ByteArrayInputStream exportReservationsToCsv(List<FlexibilityReservation> reservations) {
+    /**
+     * Converts a list of {@link FlexibilityReservation} objects into a CSV format and returns it as a {@link ByteArrayInputStream}.
+     *
+     * @param reservations the list of reservations to export
+     * @return CSV data as a {@link ByteArrayInputStream}
+     * @throws RuntimeException if an I/O error occurs during CSV generation
+     */
+    public ByteArrayInputStream exportReservationsToCsv(List<FlexibilityReservation> reservations) {
         try(ByteArrayOutputStream out = new ByteArrayOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
             CSVWriter csvWriter = new CSVWriter(writer)) {

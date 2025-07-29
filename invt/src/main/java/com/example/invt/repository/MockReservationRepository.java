@@ -8,6 +8,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * Mock implementation of a repository for retrieving {@link FlexibilityReservation} objects.
+ */
 @Component
 public class MockReservationRepository {
 

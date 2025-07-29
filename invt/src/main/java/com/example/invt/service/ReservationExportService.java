@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 import static com.example.invt.constant.Constants.C1000;
 
+/**
+ * Service for exporting reservation data as CSV files.
+ */
 @Service
 public class ReservationExportService {
 
@@ -25,16 +28,35 @@ public class ReservationExportService {
     @Autowired
     private ReservationCsvUtil reservationCsvUtil;
 
+    /**
+     * Exports all reservations for a given asset and market as a CSV.
+     *
+     * @param assetId  the asset ID to filter by
+     * @param marketId the market ID to filter by
+     * @return a {@link ByteArrayInputStream} containing the CSV data
+     */
     public ByteArrayInputStream exportReservationCsv(UUID assetId, UUID marketId) {
         var filtered = mockReservationRepository.findByAssetAndMarket(assetId, marketId).stream().collect(Collectors.toList());
         var convertedReservations = convertToMw(filtered);
         return reservationCsvUtil.exportReservationsToCsv(convertedReservations);
     }
 
+
+    /**
+     * Exports filtered reservations as a CSV based on asset, market, time range, and optional aggregation.
+     *
+     * @param assetId  the asset ID to filter by
+     * @param marketId the market ID to filter by
+     * @param fromZoned start of time range (inclusive)
+     * @param toZoned end of time range (exclusive)
+     * @param total if true, aggregates positive/negative values before export
+     * @return a {@link ByteArrayInputStream} containing the CSV data
+     */
     public ByteArrayInputStream exportReservationsCsv(UUID assetId, UUID marketId, LocalDateTime fromZoned, LocalDateTime toZoned, boolean total) {
         var zone = ZoneId.of("UTC");
         var filtered = mockReservationRepository.findByAssetAndMarket(assetId, marketId).stream()
-                .filter(r -> r.getTimestamp().isAfter(fromZoned.atZone(zone)) && r.getTimestamp().isBefore(toZoned.atZone(zone))).collect(Collectors.toList());
+                .filter(r -> !r.getTimestamp().isBefore(fromZoned.atZone(zone))
+                        && !r.getTimestamp().isAfter(toZoned.atZone(zone))).collect(Collectors.toList());
         var convertedReservations = convertToMw(filtered);
         var calculatedReservations = total ? sumPositiveAndNegativeValues(convertedReservations) : convertedReservations;
         return reservationCsvUtil.exportReservationsToCsv(calculatedReservations);
